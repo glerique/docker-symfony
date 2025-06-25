@@ -14,27 +14,40 @@ A complete Symfony development environment with Docker, featuring PHP 8.3, Nginx
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Docker and Docker Compose
-- Git
-
-### Getting Started
-
-#### Option 1: Automatic Setup
-```bash
-git clone https://github.com/glerique/docker-symfony.git
-cd docker-symfony
-./setup.sh
-```
-
-#### Option 2: Makefile (Recommended)
+**Option 1: Using Makefile (Recommended)**
 ```bash
 git clone https://github.com/glerique/docker-symfony.git
 cd docker-symfony
 make install
 ```
 
-#### Option 3: Manual Setup
+**Option 2: Manual setup**
+```bash
+# Clone and setup
+git clone https://github.com/glerique/docker-symfony.git
+cd docker-symfony
+cp .env.example .env.local
+
+# Start the project
+docker-compose up -d
+
+# Install dependencies
+docker exec -it docker-symfony-php-1 composer install
+docker exec -it docker-symfony-node-1 npm ci
+
+# Open http://localhost:8080
+```
+
+## 🔧 Detailed Setup
+
+### Prerequisites
+- Docker and Docker Compose
+- Git
+
+### Getting Started
+
+### Getting Started
+
 1. **Clone the repository**
 ```bash
 git clone https://github.com/glerique/docker-symfony.git
@@ -44,7 +57,7 @@ cd docker-symfony
 2. **Copy environment file**
 ```bash
 cp .env.example .env.local
-# Edit .env.local with your specific configuration
+# Edit .env.local with your specific configuration if needed
 ```
 
 3. **Start containers**
@@ -62,11 +75,40 @@ docker exec -it docker-symfony-php-1 composer install
 docker exec -it docker-symfony-node-1 npm ci
 ```
 
+6. **Access the application**
+   - Open http://localhost:8080 in your browser
+```bash
+docker exec -it docker-symfony-node-1 npm ci
+```
+
 ## 🔗 Available Services
 
 - **Symfony Application**: http://localhost:8080
 - **Adminer (Database)**: http://localhost:8081
 - **Mailpit (Email testing)**: http://localhost:8025
+
+## 🐛 Troubleshooting
+
+### Container names not found?
+If you get "No such container" errors, check the actual container names:
+```bash
+docker ps
+# Then use the correct container names in commands
+```
+
+### Port already in use?
+If port 8080 is already used, you can change it in `docker-compose.yaml`:
+```yaml
+nginx:
+  ports:
+    - "8081:80"  # Change 8080 to 8081 or any available port
+```
+
+### Permission issues?
+If you have permission issues with files:
+```bash
+sudo chown -R $USER:$USER .
+```
 
 ## 📊 Database Configuration
 
@@ -88,7 +130,20 @@ This project uses Symfony's environment file hierarchy:
 
 ## 🛠️ Useful Commands
 
-### PHP/Symfony
+### Using Makefile
+```bash
+make help       # Show all available commands
+make install    # Full project setup
+make up         # Start containers
+make down       # Stop containers
+make logs       # Show container logs
+make shell      # Enter PHP container
+make composer   # Install PHP dependencies
+make npm        # Install Node dependencies
+make clean      # Clean containers and volumes
+```
+
+### Manual Docker Commands
 ```bash
 # Enter PHP container
 docker exec -it docker-symfony-php-1 bash
